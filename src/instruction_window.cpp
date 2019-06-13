@@ -1,5 +1,5 @@
-#include "instructionwindow.h"
-#include "ui_instructionwindow.h"
+#include "instruction_window.h"
+#include "ui_instruction_window.h"
 
 InstructionWindow::InstructionWindow(QWidget *parent) :
     QDialog(parent),

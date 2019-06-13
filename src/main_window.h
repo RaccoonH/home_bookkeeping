@@ -16,9 +16,9 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_buttonHelp_clicked();
-
-    void on_buttonAbout_clicked();
+    void onHelpClicked();
+    void onAboutClicked();
+    void onExitClicked();
 
 private:
     Ui::MainWindow *ui;
