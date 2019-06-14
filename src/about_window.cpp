@@ -1,19 +1,17 @@
 #include "about_window.h"
-#include "ui_about_window.h"
-#include "qlabel.h"
-#include "qgridlayout.h"
-#include "qpushbutton.h"
 #include <QApplication>
 
 AboutWindow::AboutWindow(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::AboutWindow)
+    QDialog(parent)
 {
-    ui->setupUi(this);
+    if (objectName().isEmpty())
+        setObjectName(QString::fromUtf8("AboutWindow"));
+    resize(400, 300);
+    setWindowTitle(QApplication::translate("AboutWindow", "About", nullptr));
 }
 
 
 AboutWindow::~AboutWindow()
 {
-    delete ui;
+    this->close();
 }
