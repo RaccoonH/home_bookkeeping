@@ -7,9 +7,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
 
 set(project_headers
-	ui_about_window.h
-	ui_instruction_window.h
-	ui_main_window.h
 	about_window.h
 	instruction_window.h
     main_window.h)

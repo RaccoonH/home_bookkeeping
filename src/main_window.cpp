@@ -21,7 +21,6 @@ void MainWindow::createMenu()
 {
     _menuBar = new QMenuBar(this);
     _menuBar->setObjectName(QString::fromUtf8("menuBar"));
-    _menuBar->setGeometry(QRect(0, 0, 916, 25));
     this->setMenuBar(_menuBar);
     this->_menu = new QMenu("&Menu");
     QAction* helpAction = this->_menu->addAction("Help");
