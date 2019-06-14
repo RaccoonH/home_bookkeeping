@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     _centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
     setCentralWidget(_centralWidget);
 
+    createCalendar();
     createMenu();
 }
 
@@ -31,6 +32,35 @@ void MainWindow::createMenu()
     connect(exitAction, SIGNAL(triggered()), this, SLOT(onExitClicked()));
     this->_menuBar->addMenu(this->_menu);
     this->_menuBar->show();
+}
+
+void MainWindow::createCalendar()
+{
+    _mainLayoutWidget = new QWidget(_centralWidget);
+    _mainLayout = new QVBoxLayout(_mainLayoutWidget);
+    QLabel *monthAndYear = new QLabel("Test label, здесь будет отображаться месяц и год");
+    monthAndYear->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    _mainLayout->addWidget(monthAndYear);
+
+    _calendarLayoutWidget = new QWidget(_centralWidget);
+    _calendarLayout = new QGridLayout(_calendarLayoutWidget);
+    _calendarLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    int week = 0;
+    int day = 0;
+    for(int i = 1;i<=30;i++)
+    {
+        _calendarLayout->addWidget(new QLabel(QString::number(i)), week, day);
+        day++;
+        if(day==6)
+        {
+            day = 0;
+            week++;
+        }
+    }
+
+    _mainLayout->addWidget(_calendarLayoutWidget);
+    _centralWidget->setLayout(_mainLayout);
 }
 
 void MainWindow::onHelpClicked()
