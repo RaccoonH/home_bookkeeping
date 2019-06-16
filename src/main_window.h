@@ -22,6 +22,7 @@ private slots:
     void onHelpClicked();
     void onAboutClicked();
     void onExitClicked();
+    void onDayInfoClicked();
 
 private:
     QWidget *_centralWidget;

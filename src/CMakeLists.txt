@@ -9,11 +9,15 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
 set(project_headers
 	about_window.h
 	instruction_window.h
+	clickable_label.h
+	dayinfo_window.h
     main_window.h)
 
 set(project_sources 
     main.cpp
 	about_window.cpp
+	dayinfo_window.cpp
+	clickable_label.cpp
 	instruction_window.cpp
     main_window.cpp)
 
