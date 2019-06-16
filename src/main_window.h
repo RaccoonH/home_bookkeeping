@@ -8,6 +8,9 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QLabel>
+#include <clickable_label.h>
+#include <day_info.h>
+#include <calendar_info.h>
 
 
 class MainWindow : public QMainWindow
@@ -22,7 +25,7 @@ private slots:
     void onHelpClicked();
     void onAboutClicked();
     void onExitClicked();
-    void onDayInfoClicked();
+
 
 private:
     QWidget *_centralWidget;
@@ -32,9 +35,11 @@ private:
     QWidget *_calendarLayoutWidget;
     QVBoxLayout *_mainLayout;
     QWidget *_mainLayoutWidget;
+    CalendarInfo *_calendarInfo;
 
     void createMenu();
     void createCalendar();
+    void createClickableLabel(DayInfo*, int, int);
 };
 
 #endif // MAINWINDOW_H

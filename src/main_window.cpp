@@ -45,8 +45,12 @@ void MainWindow::createCalendar()
 {    
     _mainLayoutWidget = new QWidget(_centralWidget);
     _mainLayout = new QVBoxLayout(_mainLayoutWidget);
-    QLabel *monthAndYear = new QLabel("Test label, здесь будет отображаться месяц и год");
+    _calendarInfo = new CalendarInfo();
+
+    QString stringMonthAndYear = _calendarInfo->_month + " " +  _calendarInfo->_year;
+    QLabel *monthAndYear = new QLabel(stringMonthAndYear);
     monthAndYear->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+    monthAndYear->setAlignment(Qt::AlignCenter);
     _mainLayout->addWidget(monthAndYear);
 
     QWidget *daysLayoutWidget = new QWidget(_centralWidget);
@@ -75,12 +79,8 @@ void MainWindow::createCalendar()
     int day = 0;
     for(int i = 1;i<=30;i++)
     {
-        ClickableLabel *l = new ClickableLabel(QString::number(i));
-        _calendarLayout->addWidget(l, week, day);
-        l->setFrameShape(QFrame::Box);
-        l->setLineWidth(1);
-        l->setAlignment(Qt::AlignTop);
-        connect(l, SIGNAL(clicked()), this, SLOT(onDayInfoClicked()));
+        DayInfo *dayInfo = new DayInfo(i,i,i);
+        createClickableLabel(dayInfo,day,week);
         day++;
         if(day==7)
         {
@@ -94,10 +94,23 @@ void MainWindow::createCalendar()
     _centralWidget->setLayout(_mainLayout);
 }
 
-void MainWindow::onDayInfoClicked()
+void MainWindow::createClickableLabel(DayInfo *dayInfo, int day, int week)
 {
-    DayInfoWindow dw;
-    dw.exec();
+    ClickableLabel *label;
+    QString *dayInfoText = new QString();
+    *dayInfoText += QString::number(dayInfo->_numOfDay);
+    *dayInfoText += "\nДоход = ";
+    *dayInfoText += QString::number(dayInfo->_income);
+    *dayInfoText += "\nРасход = ";
+    *dayInfoText += QString::number(dayInfo->_outcome);
+    *dayInfoText += "\nОстаток = ";
+    *dayInfoText += QString::number(dayInfo->_balance);
+    label = new ClickableLabel(*dayInfoText);
+    label->setFrameShape(QFrame::Box);
+    label->setLineWidth(1);
+    label->setAlignment(Qt::AlignTop);
+    _calendarLayout->addWidget(label,week,day);
+    connect(label, SIGNAL(clicked()), dayInfo, SLOT(onDayInfoClicked()));
 }
 
 void MainWindow::onHelpClicked()
