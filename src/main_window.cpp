@@ -1,9 +1,4 @@
 #include "main_window.h"
-#include "instruction_window.h"
-#include "about_window.h"
-#include "qdebug.h"
-#include "clickable_label.h"
-#include "dayinfo_window.h"
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -21,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     setAutoFillBackground(true);
     setPalette(pal);
 
+    _date = new QDate();
+    *_date = QDate::currentDate();
     createCalendar();
     createMenu();
 }
@@ -29,16 +26,18 @@ void MainWindow::createMenu()
 {
     _menuBar = new QMenuBar(this);
     _menuBar->setObjectName(QString::fromUtf8("menuBar"));
-    this->setMenuBar(_menuBar);
-    this->_menu = new QMenu("&Menu");
-    QAction* helpAction = this->_menu->addAction("Help");
-    connect(helpAction, SIGNAL(triggered()), this, SLOT(onHelpClicked()));
-    QAction* aboutAction = this->_menu->addAction("About");
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(onAboutClicked()));
-    QAction* exitAction = this->_menu->addAction("Exit");
+    setMenuBar(_menuBar);
+    _file = new QMenu("Файл");
+    QAction* exitAction = _file->addAction("Выход");
     connect(exitAction, SIGNAL(triggered()), this, SLOT(onExitClicked()));
-    this->_menuBar->addMenu(this->_menu);
-    this->_menuBar->show();
+    _menu = new QMenu("Справка");
+    QAction* helpAction = _menu->addAction("Инструкция");
+    connect(helpAction, SIGNAL(triggered()), this, SLOT(onHelpClicked()));
+    QAction* aboutAction = _menu->addAction("О программе");
+    connect(aboutAction, SIGNAL(triggered()), this, SLOT(onAboutClicked()));
+    _menuBar->addMenu(_file);
+    _menuBar->addMenu(_menu);
+    _menuBar->show();
 }
 
 void MainWindow::createCalendar()
@@ -46,13 +45,23 @@ void MainWindow::createCalendar()
     _mainLayoutWidget = new QWidget(_centralWidget);
     _mainLayout = new QVBoxLayout(_mainLayoutWidget);
 
-    _date = new QDate();
-    *_date = QDate::currentDate();
+    QWidget *monthAndYearLayoutWidget = new QWidget(_centralWidget);
+    QHBoxLayout *monthAndYearLayout = new QHBoxLayout(monthAndYearLayoutWidget);
+    QPushButton *pastMonthButton = new QPushButton("<");
+    pastMonthButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    connect(pastMonthButton,SIGNAL(clicked()),this,SLOT(onPastMonthClicked()));
+    QPushButton *nextMonthButton = new QPushButton(">");
+    connect(nextMonthButton,SIGNAL(clicked()),this,SLOT(onNextMonthClicked()));
+    nextMonthButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
     QString stringMonthAndYear = _date->toString("MMM") + " " +  _date->toString("yyyy");
     QLabel *monthAndYear = new QLabel(stringMonthAndYear);
-    monthAndYear->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+    monthAndYearLayout->addWidget(pastMonthButton);
+    monthAndYearLayout->addWidget(monthAndYear);
+    monthAndYearLayout->addWidget(nextMonthButton);
+    monthAndYearLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
     monthAndYear->setAlignment(Qt::AlignCenter);
-    _mainLayout->addWidget(monthAndYear);
+    _mainLayout->addWidget(monthAndYearLayoutWidget);
 
     QWidget *daysLayoutWidget = new QWidget(_centralWidget);
     QHBoxLayout *daysLayout = new QHBoxLayout(daysLayoutWidget);
@@ -108,6 +117,24 @@ void MainWindow::createClickableLabel(DayInfo *dayInfo, int day, int week)
     label->setAlignment(Qt::AlignTop);
     _calendarLayout->addWidget(label,week,day);
     connect(label, SIGNAL(clicked()), dayInfo, SLOT(onDayInfoClicked()));
+}
+
+void MainWindow::onPastMonthClicked()
+{
+    _centralWidget = new QWidget(this);
+    _centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
+    setCentralWidget(_centralWidget);
+    *_date = _date->addMonths(-1);
+    createCalendar();
+}
+
+void MainWindow::onNextMonthClicked()
+{
+    _centralWidget = new QWidget(this);
+    _centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
+    setCentralWidget(_centralWidget);
+    *_date = _date->addMonths(1);
+    createCalendar();
 }
 
 void MainWindow::onHelpClicked()

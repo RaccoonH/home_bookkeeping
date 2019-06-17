@@ -1,5 +1,4 @@
 #include "about_window.h"
-#include "qapplication.h"
 
 AboutWindow::AboutWindow(QWidget *parent) :
     QDialog(parent)
@@ -7,7 +6,7 @@ AboutWindow::AboutWindow(QWidget *parent) :
     if (objectName().isEmpty())
         setObjectName(QString::fromUtf8("AboutWindow"));
     resize(400, 300);
-    setWindowTitle(QApplication::translate("AboutWindow", "About", nullptr));
+    setWindowTitle(QApplication::translate("AboutWindow", "О программе", nullptr));
 }
 
 

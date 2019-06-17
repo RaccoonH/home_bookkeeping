@@ -2,6 +2,7 @@
 #define INSTRUCTIONWINDOW_H
 
 #include <QDialog>
+#include <QApplication>
 
 class InstructionWindow : public QDialog
 {

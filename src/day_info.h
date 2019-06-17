@@ -2,10 +2,10 @@
 #define DAY_INFO_H
 
 #include <QWidget>
-#include <dayinfo_window.h>
-#include <QLabel>
-#include <qlayout.h>
 #include <QSpinBox>
+#include <QLabel>
+#include "qlayout.h"
+#include "dayinfo_window.h"
 
 class DayInfo : public QWidget
 {
