@@ -8,7 +8,6 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
 
 set(project_headers
 	about_window.h
-	calendar_info.h
 	day_info.h
 	instruction_window.h
 	clickable_label.h
@@ -18,7 +17,6 @@ set(project_headers
 set(project_sources 
     main.cpp
 	about_window.cpp
-	calendar_info.cpp
 	day_info.cpp
 	dayinfo_window.cpp
 	clickable_label.cpp

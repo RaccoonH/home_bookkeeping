@@ -10,7 +10,7 @@
 #include <QLabel>
 #include <clickable_label.h>
 #include <day_info.h>
-#include <calendar_info.h>
+#include <QDate>
 
 
 class MainWindow : public QMainWindow
@@ -35,7 +35,7 @@ private:
     QWidget *_calendarLayoutWidget;
     QVBoxLayout *_mainLayout;
     QWidget *_mainLayoutWidget;
-    CalendarInfo *_calendarInfo;
+    QDate *_date;
 
     void createMenu();
     void createCalendar();

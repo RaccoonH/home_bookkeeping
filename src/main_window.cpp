@@ -45,9 +45,10 @@ void MainWindow::createCalendar()
 {    
     _mainLayoutWidget = new QWidget(_centralWidget);
     _mainLayout = new QVBoxLayout(_mainLayoutWidget);
-    _calendarInfo = new CalendarInfo();
 
-    QString stringMonthAndYear = _calendarInfo->_month + " " +  _calendarInfo->_year;
+    _date = new QDate();
+    *_date = QDate::currentDate();
+    QString stringMonthAndYear = _date->toString("MMM") + " " +  _date->toString("yyyy");
     QLabel *monthAndYear = new QLabel(stringMonthAndYear);
     monthAndYear->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
     monthAndYear->setAlignment(Qt::AlignCenter);
@@ -55,36 +56,32 @@ void MainWindow::createCalendar()
 
     QWidget *daysLayoutWidget = new QWidget(_centralWidget);
     QHBoxLayout *daysLayout = new QHBoxLayout(daysLayoutWidget);
-    QLabel *monday = new QLabel("Понедельник");
-    QLabel *tuesday = new QLabel("Вторник");
-    QLabel *wednesday = new QLabel("Среда");
-    QLabel *thursday = new QLabel("Четверг");
-    QLabel *friday = new QLabel("Пятница");
-    QLabel *saturday = new QLabel("Суббота");
-    QLabel *sunday = new QLabel("Воскресенье");
-    daysLayout->addWidget(monday);
-    daysLayout->addWidget(tuesday);
-    daysLayout->addWidget(wednesday);
-    daysLayout->addWidget(thursday);
-    daysLayout->addWidget(friday);
-    daysLayout->addWidget(saturday);
-    daysLayout->addWidget(sunday);
+    QDate *date = new QDate(1,1,1);
+    for(int i = 0;i<7;i++)
+    {
+        QLabel *nameOfDay = new QLabel;
+        nameOfDay->setText(date->toString("ddd"));
+        *date = date->addDays(1);
+        daysLayout->addWidget(nameOfDay);
+    }
     daysLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
     _mainLayout->addWidget(daysLayoutWidget);
 
     _calendarLayoutWidget = new QWidget(_centralWidget);
     _calendarLayout = new QGridLayout(_calendarLayoutWidget);
     _calendarLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    int week = 0;
-    int day = 0;
-    for(int i = 1;i<=30;i++)
+    int week = 1;
+    int day;
+    *_date = _date->addDays(-(_date->day())+1);
+    day = _date->dayOfWeek();
+    for(int i = 1;i<=_date->daysInMonth();i++)
     {
         DayInfo *dayInfo = new DayInfo(i,i,i);
         createClickableLabel(dayInfo,day,week);
         day++;
-        if(day==7)
+        if(day==8)
         {
-            day = 0;
+            day = 1;
             week++;
         }
     }
