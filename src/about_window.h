@@ -4,10 +4,6 @@
 #include <QDialog>
 #include <QApplication>
 
-namespace Ui {
-class AboutWindow;
-}
-
 class AboutWindow : public QDialog
 {
     Q_OBJECT
@@ -15,9 +11,6 @@ class AboutWindow : public QDialog
 public:
     explicit AboutWindow(QWidget *parent = 0);
     ~AboutWindow();
-
-private:
-    Ui::AboutWindow *ui;
 };
 
 #endif // ABOUTWINDOW_H

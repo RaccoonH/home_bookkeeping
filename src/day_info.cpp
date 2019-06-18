@@ -1,7 +1,7 @@
 #include "day_info.h"
 
 DayInfo::DayInfo(int num, double in, double out, QWidget* parent)
-    : QWidget(parent)
+    : QLabel(parent)
 {
     _numOfDay = num;
     _income = in;
@@ -13,9 +13,21 @@ DayInfo::~DayInfo()
 {
 }
 
-void DayInfo::calcBalance()
+void DayInfo::createLabelWidget()
 {
-    _balance = _income - _outcome;
+    QString *dayInfoText = new QString();
+    *dayInfoText += QString::number(_numOfDay);
+    *dayInfoText += "\nДоход = ";
+    *dayInfoText += QString::number(_income);
+    *dayInfoText += "\nРасход = ";
+    *dayInfoText += QString::number(_outcome);
+    *dayInfoText += "\nОстаток = ";
+    *dayInfoText += QString::number(_balance);
+    setText(*dayInfoText);
+    setFrameShape(QFrame::Box);
+    setLineWidth(1);
+    setAlignment(Qt::AlignTop);
+    connect(this, SIGNAL(clicked()), this, SLOT(onDayInfoClicked()));
 }
 
 void DayInfo::onDayInfoClicked()
@@ -51,4 +63,39 @@ void DayInfo::onDayInfoClicked()
     layout->addWidget(balanceBox,3,1);
     dw.setLayout(layout);
     dw.exec();
+}
+
+void DayInfo::calcBalance()
+{
+    _balance = _income - _outcome;
+}
+
+void DayInfo::mousePressEvent(QMouseEvent* event)
+{
+    emit clicked();
+}
+
+void DayInfo::setNumOfDay(int day)
+{
+    _numOfDay = day;
+}
+
+void DayInfo::setIncome(double in)
+{
+    _income = in;
+}
+
+void DayInfo::setOutcome(double out)
+{
+    _outcome = out;
+}
+
+double DayInfo::getIncome()
+{
+    return _income;
+}
+
+double DayInfo::getOutcome()
+{
+    return  _outcome;
 }

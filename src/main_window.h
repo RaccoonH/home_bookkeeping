@@ -2,14 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtWidgets/QApplication>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QWidget>
 #include <QGridLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QDate>
-#include "clickable_label.h"
 #include "day_info.h"
 #include "dayinfo_window.h"
 #include "instruction_window.h"
@@ -32,19 +30,15 @@ private slots:
     void onPastMonthClicked();
 
 private:
-    QWidget *_centralWidget;
-    QMenuBar *_menuBar;
-    QMenu *_menu;
-    QMenu *_file;
-    QGridLayout *_calendarLayout;
-    QWidget *_calendarLayoutWidget;
-    QVBoxLayout *_mainLayout;
-    QWidget *_mainLayoutWidget;
-    QDate *_date;
+    QMenu* createFileMenu();
+    QMenu* createHelpMenu();
+    QWidget* createHeadline();
+    QWidget* createDaysOfWeek();
+    QWidget* createCalendar();
 
-    void createMenu();
-    void createCalendar();
-    void createClickableLabel(DayInfo*, int, int);
+private:
+    QWidget *_centralWidget;
+    QDate *_date;
 };
 
 #endif // MAINWINDOW_H

@@ -10,7 +10,6 @@ set(project_headers
 	src/about_window.h
 	src/day_info.h
 	src/instruction_window.h
-	src/clickable_label.h
 	src/dayinfo_window.h
     src/main_window.h)
 
@@ -19,7 +18,6 @@ set(project_sources
 	src/about_window.cpp
 	src/day_info.cpp
 	src/dayinfo_window.cpp
-	src/clickable_label.cpp
 	src/instruction_window.cpp
     src/main_window.cpp)
 
