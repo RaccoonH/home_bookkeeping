@@ -2,20 +2,28 @@
 #define CONNECTOR_DATA_H
 
 #include "dayinfo.h"
-#include <vector>
+#include <QObject>
+#include <QMap>
+#include <QDate>
+#include "main_window.h"
 
-class ConnectorData
+class ConnectorData : public QObject
 {
+    Q_OBJECT
+
 public:
-    static void changeData(double,double, QDate);
-    static void initialization(QDate*);
-    static void addDayInfo(DayInfo*);
-    static DayInfo* getDayInfo(int);
+    static void setData(DayInfo*, QDate);
+    static void initialization(QDate, QMainWindow*);
+    static DayInfo getDayInfo(QDate);
 
 private:
-    static ConnectorData *_instance;
     ConnectorData();
-    //Пока что контейнер
-    std::vector <DayInfo> *arrDayInfo;
+    static ConnectorData *_instance;
+    QMap<QDate, DayInfo*> mapDayInfo;
+    void sendSignal();
+
+signals:
+    void valueChanged();
+
 };
 #endif // CONNECTOR_DATA_H

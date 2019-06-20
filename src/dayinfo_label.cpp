@@ -1,13 +1,11 @@
 #include "dayinfo_label.h"
 #include "dayinfo_window.h"
-#include "connector_data.h"
 
-DayInfoLabel::DayInfoLabel(DayInfo *d, QWidget* parent)
+DayInfoLabel::DayInfoLabel(DayInfo d, QWidget* parent)
     : QLabel(parent)
 {
     QString *dayInfoText = new QString();
-    dayInfo = d;
-
+    dayInfo = new DayInfo(d.getIncome(),d.getOutcome(),d.getDate());
     *dayInfoText += QString::number(dayInfo->getDay());
     *dayInfoText += "\nДоход = ";
     *dayInfoText += QString::number(dayInfo->getIncome());
@@ -28,7 +26,8 @@ DayInfoLabel::~DayInfoLabel()
 
 void DayInfoLabel::onDayInfoLabelClicked()
 {
-    DayInfoWindow dw(dayInfo,this);
+
+    DayInfoWindow dw(*dayInfo,this);
 }
 
 void DayInfoLabel::mousePressEvent(QMouseEvent* event)

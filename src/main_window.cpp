@@ -1,6 +1,5 @@
 #include "main_window.h"
 #include "connector_data.h"
-#include "qdebug.h"
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -27,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 
     _date = new QDate();
     *_date = QDate::currentDate();
+    ConnectorData::initialization(*_date,this);
 
     auto headline = createHeadline();
     mainLayout->addWidget(headline);
@@ -106,14 +106,17 @@ QWidget* MainWindow::createCalendar()
 
     int week = 1;
     int day;
-    *_date = _date->addDays(-(_date->day())+1);
+    int month;
+
+    *_date = _date->addDays(1-(_date->day()));
     day = _date->dayOfWeek();
-    ConnectorData::initialization(_date);
-    for(int i = 1;i<=_date->daysInMonth();i++)
+    month = _date->daysInMonth();
+    for(int i = 1;i<=month;i++)
     {
-        DayInfo *dayInfo = ConnectorData::getDayInfo(i-1);
+        DayInfo dayInfo = ConnectorData::getDayInfo(*_date);
         DayInfoLabel *dayInfoLabel = new DayInfoLabel(dayInfo,this);
         calendarLayout->addWidget(dayInfoLabel,week,day);
+        *_date = _date->addDays(1);
         day++;
         if(day==8)
         {
@@ -166,7 +169,20 @@ void MainWindow::onNextMonthClicked()
 
 void MainWindow::onValueChanged()
 {
+    _centralWidget = new QWidget(this);
+    setCentralWidget(_centralWidget);
+    QVBoxLayout *mainLayout = new QVBoxLayout();
+    _centralWidget->setLayout(mainLayout);
+    *_date = QDate::currentDate();
 
+    auto headline = createHeadline();
+    mainLayout->addWidget(headline);
+
+    auto daysOfWeekLabel = createDaysOfWeek();
+    mainLayout->addWidget(daysOfWeekLabel);
+
+    auto calendar = createCalendar();
+    mainLayout->addWidget(calendar);
 }
 
 void MainWindow::onHelpClicked()

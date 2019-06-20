@@ -1,9 +1,8 @@
 #ifndef DAYINFO_WINDOW_H
 #define DAYINFO_WINDOW_H
 
-
 #include <QDialog>
-#include "dayinfo_label.h"
+#include <QDoubleSpinBox>
 #include "dayinfo.h"
 
 class DayInfoWindow : public QDialog
@@ -12,11 +11,8 @@ class DayInfoWindow : public QDialog
 
 public:
 
-    explicit DayInfoWindow(DayInfo* ,QWidget *parent = 0);
+    explicit DayInfoWindow(DayInfo ,QWidget *parent = 0);
     ~DayInfoWindow();
-
-signals:
-    void valueChanged();
 
 private slots:
     void onValueChanged(double);
@@ -27,6 +23,7 @@ private:
     QDoubleSpinBox *_balanceBox;
     QDoubleSpinBox *_incomeBox;
     QDoubleSpinBox *_outcomeBox;
+    DayInfo *_dayInfo;
     QDate _date;
 
 };

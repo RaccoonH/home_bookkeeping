@@ -1,17 +1,17 @@
 #include "dayinfo_window.h"
 #include "qapplication.h"
 #include <QLayout>
-#include <QDoubleSpinBox>
 #include <QPushButton>
 #include "connector_data.h"
 
-DayInfoWindow::DayInfoWindow(DayInfo *dayInfo, QWidget *parent) :
+DayInfoWindow::DayInfoWindow(DayInfo d, QWidget *parent) :
     QDialog(parent)
 {
     resize(400, 300);
     setWindowTitle(QApplication::translate("DayInfoWindow", "Edit", nullptr));
 
-    _date = dayInfo->getDate();
+    _dayInfo = new DayInfo(d.getIncome(), d.getOutcome(), d.getDate());
+    _date = _dayInfo->getDate();
 
     QPalette pal(palette());
     pal.setColor(QPalette::Background, Qt::white);
@@ -19,26 +19,26 @@ DayInfoWindow::DayInfoWindow(DayInfo *dayInfo, QWidget *parent) :
     setPalette(pal);
 
     QGridLayout *layout = new QGridLayout;
-    QLabel *day = new QLabel(QString::number(dayInfo->getDay()));
+    QLabel *day = new QLabel(QString::number(_dayInfo->getDay()));
     day->setAlignment(Qt::AlignTop);
     day->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
 
     QLabel *income = new QLabel("Доход");
     _incomeBox = new QDoubleSpinBox;
     _incomeBox->setRange(0,10000000);
-    _incomeBox->setValue(dayInfo->getIncome());
+    _incomeBox->setValue(_dayInfo->getIncome());
     connect(_incomeBox, SIGNAL(valueChanged(double)),this,SLOT(onValueChanged(double)));
 
     QLabel *outcome = new QLabel("Расход");
     _outcomeBox = new QDoubleSpinBox;
     _outcomeBox->setRange(0,10000000);
-    _outcomeBox->setValue(dayInfo->getOutcome());
+    _outcomeBox->setValue(_dayInfo->getOutcome());
     connect(_outcomeBox, SIGNAL(valueChanged(double)),this,SLOT(onValueChanged(double)));
 
     QLabel *balance = new QLabel("Остаток");
     _balanceBox = new QDoubleSpinBox;
     _balanceBox->setRange(-10000000,10000000);
-    _balanceBox->setValue(dayInfo->getBalance());
+    _balanceBox->setValue(_dayInfo->getBalance());
     _balanceBox->setDisabled(true);
 
     QPushButton *cancel = new QPushButton("Отмена");
@@ -77,6 +77,8 @@ void DayInfoWindow::onCancelClicked()
 
 void DayInfoWindow::onApplyClicked()
 {
-    ConnectorData::changeData(_incomeBox->value(),_outcomeBox->value(),_date);
+    _dayInfo->setIncome(_incomeBox->value());
+    _dayInfo->setOutcome(_outcomeBox->value());
+    ConnectorData::setData(_dayInfo,_date);
     this->close();
 }

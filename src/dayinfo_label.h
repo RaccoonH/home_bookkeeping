@@ -1,10 +1,7 @@
 #ifndef DAY_INFO_H
 #define DAY_INFO_H
 
-#include <QWidget>
-#include <QSpinBox>
 #include <QLabel>
-#include "qlayout.h"
 #include "dayinfo.h"
 
 class DayInfoLabel : public QLabel
@@ -12,7 +9,7 @@ class DayInfoLabel : public QLabel
     Q_OBJECT
 
 public:
-    explicit DayInfoLabel(DayInfo* ,QWidget *parent = 0);
+    explicit DayInfoLabel(DayInfo ,QWidget *parent = 0);
     ~DayInfoLabel();
     void createLabelWidget();
 
@@ -20,11 +17,10 @@ signals:
     void clicked();
 
 private:
-    DayInfo* dayInfo;
+    DayInfo *dayInfo;
 
 private slots:
     void onDayInfoLabelClicked();
-
 
 protected:
     void mousePressEvent(QMouseEvent* event);
