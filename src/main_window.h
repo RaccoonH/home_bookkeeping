@@ -8,7 +8,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QDate>
-#include "day_info.h"
+#include "dayinfo_label.h"
 #include "dayinfo_window.h"
 #include "instruction_window.h"
 #include "about_window.h"
@@ -28,6 +28,7 @@ private slots:
     void onExitClicked();
     void onNextMonthClicked();
     void onPastMonthClicked();
+    void onValueChanged();
 
 private:
     QMenu* createFileMenu();

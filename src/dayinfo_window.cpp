@@ -1,14 +1,82 @@
 #include "dayinfo_window.h"
 #include "qapplication.h"
+#include <QLayout>
+#include <QDoubleSpinBox>
+#include <QPushButton>
+#include "connector_data.h"
 
-DayInfoWindow::DayInfoWindow(QWidget *parent) :
+DayInfoWindow::DayInfoWindow(DayInfo *dayInfo, QWidget *parent) :
     QDialog(parent)
 {
     resize(400, 300);
     setWindowTitle(QApplication::translate("DayInfoWindow", "Edit", nullptr));
+
+    _date = dayInfo->getDate();
+
+    QPalette pal(palette());
+    pal.setColor(QPalette::Background, Qt::white);
+    setAutoFillBackground(true);
+    setPalette(pal);
+
+    QGridLayout *layout = new QGridLayout;
+    QLabel *day = new QLabel(QString::number(dayInfo->getDay()));
+    day->setAlignment(Qt::AlignTop);
+    day->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+
+    QLabel *income = new QLabel("Доход");
+    _incomeBox = new QDoubleSpinBox;
+    _incomeBox->setRange(0,10000000);
+    _incomeBox->setValue(dayInfo->getIncome());
+    connect(_incomeBox, SIGNAL(valueChanged(double)),this,SLOT(onValueChanged(double)));
+
+    QLabel *outcome = new QLabel("Расход");
+    _outcomeBox = new QDoubleSpinBox;
+    _outcomeBox->setRange(0,10000000);
+    _outcomeBox->setValue(dayInfo->getOutcome());
+    connect(_outcomeBox, SIGNAL(valueChanged(double)),this,SLOT(onValueChanged(double)));
+
+    QLabel *balance = new QLabel("Остаток");
+    _balanceBox = new QDoubleSpinBox;
+    _balanceBox->setRange(-10000000,10000000);
+    _balanceBox->setValue(dayInfo->getBalance());
+    _balanceBox->setDisabled(true);
+
+    QPushButton *cancel = new QPushButton("Отмена");
+    connect(cancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
+    QPushButton *apply = new QPushButton("Принять");
+    connect(apply, SIGNAL(clicked()), this, SLOT(onApplyClicked()));
+
+    layout->addWidget(day,0,0);
+    layout->addWidget(income,1,0);
+    layout->addWidget(_incomeBox,1,1);
+    layout->addWidget(outcome,2,0);
+    layout->addWidget(_outcomeBox,2,1);
+    layout->addWidget(balance,3,0);
+    layout->addWidget(_balanceBox,3,1);
+    layout->addWidget(cancel,4,0);
+    layout->addWidget(apply,4,1);
+
+    setLayout(layout);
+    exec();
 }
 
 DayInfoWindow::~DayInfoWindow()
 {
+    this->close();
+}
+
+void DayInfoWindow::onValueChanged(double value)
+{
+    _balanceBox->setValue(_incomeBox->value()-_outcomeBox->value());
+}
+
+void DayInfoWindow::onCancelClicked()
+{
+    this->close();
+}
+
+void DayInfoWindow::onApplyClicked()
+{
+    ConnectorData::changeData(_incomeBox->value(),_outcomeBox->value(),_date);
     this->close();
 }

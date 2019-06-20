@@ -1,4 +1,6 @@
 #include "main_window.h"
+#include "connector_data.h"
+#include "qdebug.h"
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -106,11 +108,12 @@ QWidget* MainWindow::createCalendar()
     int day;
     *_date = _date->addDays(-(_date->day())+1);
     day = _date->dayOfWeek();
+    ConnectorData::initialization(_date);
     for(int i = 1;i<=_date->daysInMonth();i++)
     {
-        DayInfo *dayInfo = new DayInfo(i,i,i,this);
-        dayInfo->createLabelWidget();
-        calendarLayout->addWidget(dayInfo,week,day);
+        DayInfo *dayInfo = ConnectorData::getDayInfo(i-1);
+        DayInfoLabel *dayInfoLabel = new DayInfoLabel(dayInfo,this);
+        calendarLayout->addWidget(dayInfoLabel,week,day);
         day++;
         if(day==8)
         {
@@ -159,6 +162,11 @@ void MainWindow::onNextMonthClicked()
 
     auto calendar = createCalendar();
     mainLayout->addWidget(calendar);
+}
+
+void MainWindow::onValueChanged()
+{
+
 }
 
 void MainWindow::onHelpClicked()

@@ -8,7 +8,9 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
 
 set(project_headers
 	src/about_window.h
-	src/day_info.h
+	src/dayinfo.h
+	src/dayinfo_label.h
+	src/connector_data.h
 	src/instruction_window.h
 	src/dayinfo_window.h
     src/main_window.h)
@@ -16,7 +18,9 @@ set(project_headers
 set(project_sources 
     src/main.cpp
 	src/about_window.cpp
-	src/day_info.cpp
+	src/dayinfo.cpp
+	src/dayinfo_label.cpp
+	src/connector_data.cpp
 	src/dayinfo_window.cpp
 	src/instruction_window.cpp
     src/main_window.cpp)
