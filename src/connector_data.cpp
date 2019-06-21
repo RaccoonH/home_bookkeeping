@@ -1,6 +1,4 @@
 #include "connector_data.h"
-#include "dayinfo.h"
-#include "QDebug"
 #include "dayinfo_label.h"
 
 ConnectorData::ConnectorData()
@@ -8,35 +6,37 @@ ConnectorData::ConnectorData()
 
 }
 
-ConnectorData * ConnectorData::_instance = 0;
+ConnectorData * ConnectorData::_instance = nullptr;
 
-void ConnectorData::initialization(QDate date, QMainWindow *main)
+ConnectorData *ConnectorData::instance()
 {
-    date = date.addDays(-(date.day())+1);
-    int month = date.daysInMonth();
+    return  _instance;
+}
+
+void ConnectorData::init()
+{
     _instance = new ConnectorData();
-    for(int i = 1;i<=month;i++)
-    {
-        DayInfo *dayInfo = new DayInfo(i,i,date);
-        _instance->mapDayInfo.insert(dayInfo->getDate(), dayInfo);
-        date = date.addDays(1);
-    }
-    connect(_instance,SIGNAL(valueChanged()),main,SLOT(onValueChanged()));
+}
+
+
+
+void ConnectorData::deinit()
+{
+    delete _instance;
 }
 
 DayInfo ConnectorData::getDayInfo(QDate date)
 {
-    DayInfo *d = _instance->mapDayInfo[date];
+    QMap<QDate, DayInfo>::iterator it = mapDayInfo.find(date);
+    DayInfo *d = new DayInfo(0,0,date);
+    *d = it.value();
+    if(it == mapDayInfo.end())
+        d = new DayInfo(0,0,date);
     return *d;
 }
 
-void ConnectorData::setData(DayInfo *dayInfo, QDate date)
+void ConnectorData::setData(DayInfo dayInfo, QDate date)
 {
     _instance->mapDayInfo.insert(date, dayInfo);
-    _instance->sendSignal();
-}
-
-void ConnectorData::sendSignal()
-{
     emit valueChanged();
 }

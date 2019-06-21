@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "connector_data.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -26,7 +27,8 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 
     _date = new QDate();
     *_date = QDate::currentDate();
-    ConnectorData::initialization(*_date,this);
+    ConnectorData::init();
+    connect(ConnectorData::instance(),SIGNAL(valueChanged()),this,SLOT(onValueChanged()));
 
     auto headline = createHeadline();
     mainLayout->addWidget(headline);
@@ -113,7 +115,7 @@ QWidget* MainWindow::createCalendar()
     month = _date->daysInMonth();
     for(int i = 1;i<=month;i++)
     {
-        DayInfo dayInfo = ConnectorData::getDayInfo(*_date);
+        DayInfo dayInfo = ConnectorData::instance()->getDayInfo(*_date);
         DayInfoLabel *dayInfoLabel = new DayInfoLabel(dayInfo,this);
         calendarLayout->addWidget(dayInfoLabel,week,day);
         *_date = _date->addDays(1);
@@ -124,7 +126,7 @@ QWidget* MainWindow::createCalendar()
             week++;
         }
     }
-
+    *_date = _date->addMonths(-1);
     calendarLayout->setHorizontalSpacing(2);
     calendarLayout->setVerticalSpacing(2);
 
@@ -173,7 +175,6 @@ void MainWindow::onValueChanged()
     setCentralWidget(_centralWidget);
     QVBoxLayout *mainLayout = new QVBoxLayout();
     _centralWidget->setLayout(mainLayout);
-    *_date = QDate::currentDate();
 
     auto headline = createHeadline();
     mainLayout->addWidget(headline);

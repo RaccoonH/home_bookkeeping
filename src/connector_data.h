@@ -12,15 +12,16 @@ class ConnectorData : public QObject
     Q_OBJECT
 
 public:
-    static void setData(DayInfo*, QDate);
-    static void initialization(QDate, QMainWindow*);
-    static DayInfo getDayInfo(QDate);
+    static void init();
+    static ConnectorData* instance();
+    static void deinit();
+    void setData(DayInfo, QDate);
+    DayInfo getDayInfo(QDate);
 
 private:
     ConnectorData();
     static ConnectorData *_instance;
-    QMap<QDate, DayInfo*> mapDayInfo;
-    void sendSignal();
+    QMap<QDate, DayInfo> mapDayInfo;
 
 signals:
     void valueChanged();

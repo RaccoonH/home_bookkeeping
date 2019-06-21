@@ -79,6 +79,6 @@ void DayInfoWindow::onApplyClicked()
 {
     _dayInfo->setIncome(_incomeBox->value());
     _dayInfo->setOutcome(_outcomeBox->value());
-    ConnectorData::setData(_dayInfo,_date);
+    ConnectorData::instance()->setData(*_dayInfo,_date);
     this->close();
 }
