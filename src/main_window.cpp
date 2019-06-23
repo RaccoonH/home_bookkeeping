@@ -1,6 +1,5 @@
 #include "main_window.h"
 #include "connector_data.h"
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {

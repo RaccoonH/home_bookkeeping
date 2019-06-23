@@ -5,7 +5,8 @@ DayInfoLabel::DayInfoLabel(DayInfo d, QWidget* parent)
     : QLabel(parent)
 {
     QString *dayInfoText = new QString();
-    dayInfo = new DayInfo(d.getIncome(),d.getOutcome(),d.getDate());
+    dayInfo = new DayInfo();
+    *dayInfo = d;
     *dayInfoText += QString::number(dayInfo->getDay());
     *dayInfoText += "\nДоход = ";
     *dayInfoText += QString::number(dayInfo->getIncome());

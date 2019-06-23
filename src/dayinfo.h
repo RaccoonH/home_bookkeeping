@@ -8,12 +8,15 @@ class DayInfo
 
 public:
     DayInfo(double,double,QDate);
+    DayInfo();
     void setIncome(double);
     void setOutcome(double);
+    void calcBalance();
+    void setBaseBalance(double);
     double getIncome();
     double getOutcome();
     double getBalance();
-    void calcBalance();
+    double getBaseBalance();
     int getDay();
     int getMonth();
     int getYear();
@@ -24,6 +27,7 @@ private:
     double _income;
     double _outcome;
     double _balance;
+    double _baseBalance;
 };
 
 #endif // DAYINFO_H

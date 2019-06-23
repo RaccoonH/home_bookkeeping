@@ -1,26 +1,43 @@
 #include "dayinfo.h"
 
+DayInfo::DayInfo()
+{
+
+}
+
 DayInfo::DayInfo(double in, double out, QDate date)
 {
     _income = in;
     _outcome = out;
     _date = date;
+    _baseBalance = 0;
     calcBalance();
 }
 
 void DayInfo::calcBalance()
 {
-    _balance = _income - _outcome;
+    _balance = 0;
+    _balance += _baseBalance;
+    _balance += _income;
+    _balance -= _outcome;
 }
 
 void DayInfo::setIncome(double in)
 {
     _income = in;
+    calcBalance();
 }
 
 void DayInfo::setOutcome(double out)
 {
     _outcome = out;
+    calcBalance();
+}
+
+void DayInfo::setBaseBalance(double balance)
+{
+    _baseBalance = balance;
+    calcBalance();
 }
 
 double DayInfo::getIncome()
@@ -36,6 +53,11 @@ double DayInfo::getOutcome()
 double DayInfo::getBalance()
 {
     return _balance;
+}
+
+double DayInfo::getBaseBalance()
+{
+    return _baseBalance;
 }
 
 QDate DayInfo::getDate()

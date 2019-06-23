@@ -10,7 +10,8 @@ DayInfoWindow::DayInfoWindow(DayInfo d, QWidget *parent) :
     resize(400, 300);
     setWindowTitle(QApplication::translate("DayInfoWindow", "Edit", nullptr));
 
-    _dayInfo = new DayInfo(d.getIncome(), d.getOutcome(), d.getDate());
+    _dayInfo = new DayInfo();
+    *_dayInfo = d;
     _date = _dayInfo->getDate();
 
     QPalette pal(palette());
@@ -67,7 +68,11 @@ DayInfoWindow::~DayInfoWindow()
 
 void DayInfoWindow::onValueChanged(double value)
 {
-    _balanceBox->setValue(_incomeBox->value()-_outcomeBox->value());
+    double balance = 0;
+    balance += _dayInfo->getBaseBalance();
+    balance += _incomeBox->value();
+    balance -= _outcomeBox->value();
+    _balanceBox->setValue(balance);
 }
 
 void DayInfoWindow::onCancelClicked()
