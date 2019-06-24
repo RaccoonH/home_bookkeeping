@@ -36,7 +36,7 @@ DayInfo ConnectorData::getDayInfo(QDate date)
     return *d;
 }
 
-void ConnectorData::setData(DayInfo dayInfo, QDate date)
+void ConnectorData::setData(QDate date, DayInfo dayInfo)
 {
     _instance->mapDayInfo.insert(date, dayInfo);
     refreshData();

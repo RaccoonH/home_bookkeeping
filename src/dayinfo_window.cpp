@@ -54,8 +54,8 @@ DayInfoWindow::DayInfoWindow(DayInfo d, QWidget *parent) :
     layout->addWidget(_outcomeBox,2,1);
     layout->addWidget(balance,3,0);
     layout->addWidget(_balanceBox,3,1);
-    layout->addWidget(cancel,4,0);
-    layout->addWidget(apply,4,1);
+    layout->addWidget(apply,4,0);
+    layout->addWidget(cancel,4,1);
 
     setLayout(layout);
     exec();
@@ -84,6 +84,6 @@ void DayInfoWindow::onApplyClicked()
 {
     _dayInfo->setIncome(_incomeBox->value());
     _dayInfo->setOutcome(_outcomeBox->value());
-    ConnectorData::instance()->setData(*_dayInfo,_date);
+    ConnectorData::instance()->setData(_date, *_dayInfo);
     this->close();
 }

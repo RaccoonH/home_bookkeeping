@@ -15,7 +15,7 @@ public:
     static void init();
     static ConnectorData* instance();
     static void deinit();
-    void setData(DayInfo, QDate);
+    void setData(QDate, DayInfo);
     DayInfo getDayInfo(QDate);
     double calcBaseBalance(QDate);
 

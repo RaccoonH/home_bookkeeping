@@ -1,5 +1,6 @@
 #include "main_window.h"
 #include "connector_data.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -21,22 +22,22 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 
     _centralWidget = new QWidget(this);
     setCentralWidget(_centralWidget);
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    _centralWidget->setLayout(mainLayout);
+    _mainLayout = new QVBoxLayout();
+    _centralWidget->setLayout(_mainLayout);
 
     _date = new QDate();
     *_date = QDate::currentDate();
     ConnectorData::init();
-    connect(ConnectorData::instance(),SIGNAL(valueChanged()),this,SLOT(onValueChanged()));
+    connect(ConnectorData::instance(),SIGNAL(valueChanged()),this,SLOT(onCalendarRefreshed()));
 
     auto headline = createHeadline();
-    mainLayout->addWidget(headline);
+    _mainLayout->addWidget(headline);
 
     auto daysOfWeekLabel = createDaysOfWeek();
-    mainLayout->addWidget(daysOfWeekLabel);
+    _mainLayout->addWidget(daysOfWeekLabel);
 
     auto calendar = createCalendar();
-    mainLayout->addWidget(calendar);
+    _mainLayout->addWidget(calendar);
 }
 
 QMenu* MainWindow::createFileMenu()
@@ -63,15 +64,17 @@ QWidget* MainWindow::createHeadline()
     QHBoxLayout *monthAndYearLayout = new QHBoxLayout(monthAndYearLayoutWidget);
 
     QPushButton *pastMonthButton = new QPushButton("<");
+    pastMonthButton->setObjectName("pastMonthButton");
     pastMonthButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    connect(pastMonthButton,SIGNAL(clicked()),this,SLOT(onPastMonthClicked()));
+    connect(pastMonthButton,SIGNAL(clicked()),this,SLOT(onCalendarRefreshed()));
 
     QString stringMonthAndYear = _date->toString("MMM") + " " +  _date->toString("yyyy");
     QLabel *monthAndYear = new QLabel(stringMonthAndYear);
     monthAndYear->setAlignment(Qt::AlignCenter);
 
     QPushButton *nextMonthButton = new QPushButton(">");
-    connect(nextMonthButton,SIGNAL(clicked()),this,SLOT(onNextMonthClicked()));
+    nextMonthButton->setObjectName("nextMonthButton");
+    connect(nextMonthButton,SIGNAL(clicked()),this,SLOT(onCalendarRefreshed()));
     nextMonthButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 
     monthAndYearLayout->addWidget(pastMonthButton);
@@ -132,57 +135,30 @@ QWidget* MainWindow::createCalendar()
     return calendarLayoutWidget;
 }
 
-void MainWindow::onPastMonthClicked()
+void MainWindow::onCalendarRefreshed()
 {
     _centralWidget = new QWidget(this);
     setCentralWidget(_centralWidget);
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    _centralWidget->setLayout(mainLayout);
-    *_date = _date->addMonths(-1);
+    _mainLayout = new QVBoxLayout();
+    _centralWidget->setLayout(_mainLayout);
+
+    if (QObject::sender()->objectName() == "pastMonthButton")
+    {
+        *_date = _date->addMonths(-1);
+    }
+    if(QObject::sender()->objectName() == "nextMonthButton")
+    {
+        *_date = _date->addMonths(1);
+    }
 
     auto headline = createHeadline();
-    mainLayout->addWidget(headline);
+    _mainLayout->addWidget(headline);
 
     auto daysOfWeekLabel = createDaysOfWeek();
-    mainLayout->addWidget(daysOfWeekLabel);
+    _mainLayout->addWidget(daysOfWeekLabel);
 
     auto calendar = createCalendar();
-    mainLayout->addWidget(calendar);
-}
-
-void MainWindow::onNextMonthClicked()
-{
-    _centralWidget = new QWidget(this);
-    setCentralWidget(_centralWidget);
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    _centralWidget->setLayout(mainLayout);
-    *_date = _date->addMonths(1);
-
-    auto headline = createHeadline();
-    mainLayout->addWidget(headline);
-
-    auto daysOfWeekLabel = createDaysOfWeek();
-    mainLayout->addWidget(daysOfWeekLabel);
-
-    auto calendar = createCalendar();
-    mainLayout->addWidget(calendar);
-}
-
-void MainWindow::onValueChanged()
-{
-    _centralWidget = new QWidget(this);
-    setCentralWidget(_centralWidget);
-    QVBoxLayout *mainLayout = new QVBoxLayout();
-    _centralWidget->setLayout(mainLayout);
-
-    auto headline = createHeadline();
-    mainLayout->addWidget(headline);
-
-    auto daysOfWeekLabel = createDaysOfWeek();
-    mainLayout->addWidget(daysOfWeekLabel);
-
-    auto calendar = createCalendar();
-    mainLayout->addWidget(calendar);
+    _mainLayout->addWidget(calendar);
 }
 
 void MainWindow::onHelpClicked()

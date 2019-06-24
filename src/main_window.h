@@ -26,9 +26,7 @@ private slots:
     void onHelpClicked();
     void onAboutClicked();
     void onExitClicked();
-    void onNextMonthClicked();
-    void onPastMonthClicked();
-    void onValueChanged();
+    void onCalendarRefreshed();
 
 private:
     QMenu* createFileMenu();
@@ -39,6 +37,7 @@ private:
 
 private:
     QWidget *_centralWidget;
+    QVBoxLayout *_mainLayout;
     QDate *_date;
 };
 
