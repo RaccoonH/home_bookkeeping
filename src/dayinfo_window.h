@@ -10,7 +10,6 @@ class DayInfoWindow : public QDialog
     Q_OBJECT
 
 public:
-
     explicit DayInfoWindow(DayInfo ,QWidget *parent = 0);
     ~DayInfoWindow();
 
@@ -23,7 +22,7 @@ private:
     QDoubleSpinBox *_balanceBox;
     QDoubleSpinBox *_incomeBox;
     QDoubleSpinBox *_outcomeBox;
-    DayInfo *_dayInfo;
+    DayInfo _dayInfo;
     QDate _date;
 
 };

@@ -38,7 +38,7 @@ private:
 private:
     QWidget *_centralWidget;
     QVBoxLayout *_mainLayout;
-    QDate *_date;
+    QDate _date;
 };
 
 #endif // MAINWINDOW_H

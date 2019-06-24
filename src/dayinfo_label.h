@@ -17,7 +17,7 @@ signals:
     void clicked();
 
 private:
-    DayInfo* dayInfo;
+    DayInfo dayInfo;
 
 private slots:
     void onDayInfoLabelClicked();

@@ -79,3 +79,5 @@ int DayInfo::getYear()
 {
     return _date.year();
 }
+
+

@@ -26,14 +26,13 @@ void ConnectorData::deinit()
 DayInfo ConnectorData::getDayInfo(QDate date)
 {
     QMap<QDate, DayInfo>::iterator it = mapDayInfo.find(date);
-    DayInfo *d = new DayInfo(0,0,date);
-    *d = it.value();
-    if(it == mapDayInfo.end())
+    DayInfo d(0,0,date);
+    if(it != mapDayInfo.end())
     {
-        d = new DayInfo(0,0,date);
+        d = it.value();
     }
-    d->setBaseBalance(calcBaseBalance(date));
-    return *d;
+    d.setBaseBalance(calcBaseBalance(date));
+    return d;
 }
 
 void ConnectorData::setData(QDate date, DayInfo dayInfo)

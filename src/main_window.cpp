@@ -22,11 +22,10 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 
     _centralWidget = new QWidget(this);
     setCentralWidget(_centralWidget);
-    _mainLayout = new QVBoxLayout();
+    _mainLayout = new QVBoxLayout(_centralWidget);
     _centralWidget->setLayout(_mainLayout);
 
-    _date = new QDate();
-    *_date = QDate::currentDate();
+    _date = QDate::currentDate();
     ConnectorData::init();
     connect(ConnectorData::instance(),SIGNAL(valueChanged()),this,SLOT(onCalendarRefreshed()));
 
@@ -42,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 
 QMenu* MainWindow::createFileMenu()
 {
-    QMenu *file = new QMenu("Файл");
+    QMenu *file = new QMenu("Файл",this);
     QAction* exitAction = file->addAction("Выход");
     connect(exitAction, SIGNAL(triggered()), this, SLOT(onExitClicked()));
     return file;
@@ -50,7 +49,7 @@ QMenu* MainWindow::createFileMenu()
 
 QMenu* MainWindow::createHelpMenu()
 {
-    QMenu *menu = new QMenu("Справка");
+    QMenu *menu = new QMenu("Справка",this);
     QAction* helpAction = menu->addAction("Инструкция");
     connect(helpAction, SIGNAL(triggered()), this, SLOT(onHelpClicked()));
     QAction* aboutAction = menu->addAction("О программе");
@@ -68,7 +67,7 @@ QWidget* MainWindow::createHeadline()
     pastMonthButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     connect(pastMonthButton,SIGNAL(clicked()),this,SLOT(onCalendarRefreshed()));
 
-    QString stringMonthAndYear = _date->toString("MMM") + " " +  _date->toString("yyyy");
+    QString stringMonthAndYear = _date.toString("MMM") + " " +  _date.toString("yyyy");
     QLabel *monthAndYear = new QLabel(stringMonthAndYear);
     monthAndYear->setAlignment(Qt::AlignCenter);
 
@@ -89,12 +88,12 @@ QWidget* MainWindow::createDaysOfWeek()
 {
     QWidget *daysLayoutWidget = new QWidget(_centralWidget);
     QHBoxLayout *daysLayout = new QHBoxLayout(daysLayoutWidget);
-    QDate *date = new QDate(1,1,1);
+    QDate date(1,1,1);
     for(int i = 0;i<7;i++)
     {
         QLabel *nameOfDay = new QLabel;
-        nameOfDay->setText(date->toString("ddd"));
-        *date = date->addDays(1);
+        nameOfDay->setText(date.toString("ddd"));
+        date = date.addDays(1);
         daysLayout->addWidget(nameOfDay);
     }
     daysLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
@@ -112,15 +111,15 @@ QWidget* MainWindow::createCalendar()
     int day;
     int month;
 
-    *_date = _date->addDays(1-(_date->day()));
-    day = _date->dayOfWeek();
-    month = _date->daysInMonth();
+    _date = _date.addDays(1-(_date.day()));
+    day = _date.dayOfWeek();
+    month = _date.daysInMonth();
     for(int i = 1;i<=month;i++)
     {
-        DayInfo dayInfo = ConnectorData::instance()->getDayInfo(*_date);
+        DayInfo dayInfo = ConnectorData::instance()->getDayInfo(_date);
         DayInfoLabel *dayInfoLabel = new DayInfoLabel(dayInfo,this);
         calendarLayout->addWidget(dayInfoLabel,week,day);
-        *_date = _date->addDays(1);
+        _date = _date.addDays(1);
         day++;
         if(day==8)
         {
@@ -128,7 +127,7 @@ QWidget* MainWindow::createCalendar()
             week++;
         }
     }
-    *_date = _date->addMonths(-1);
+    _date = _date.addMonths(-1);
     calendarLayout->setHorizontalSpacing(2);
     calendarLayout->setVerticalSpacing(2);
 
@@ -139,16 +138,16 @@ void MainWindow::onCalendarRefreshed()
 {
     _centralWidget = new QWidget(this);
     setCentralWidget(_centralWidget);
-    _mainLayout = new QVBoxLayout();
+    _mainLayout = new QVBoxLayout(_centralWidget);
     _centralWidget->setLayout(_mainLayout);
 
     if (QObject::sender()->objectName() == "pastMonthButton")
     {
-        *_date = _date->addMonths(-1);
+        _date = _date.addMonths(-1);
     }
     if(QObject::sender()->objectName() == "nextMonthButton")
     {
-        *_date = _date->addMonths(1);
+        _date = _date.addMonths(1);
     }
 
     auto headline = createHeadline();
@@ -180,5 +179,6 @@ void MainWindow::onExitClicked()
 
 MainWindow::~MainWindow()
 {
+    ConnectorData::deinit();
     this->destroy();
 }
