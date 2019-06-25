@@ -1,11 +1,14 @@
 #ifndef CONNECTOR_DATA_H
 #define CONNECTOR_DATA_H
 
+#include "main_window.h"
+#include "dayinfo.h"
 #include <QObject>
 #include <QMap>
 #include <QDate>
-#include "main_window.h"
-#include "dayinfo.h"
+#include <QFile>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 
 class ConnectorData : public QObject
 {
@@ -22,10 +25,12 @@ public:
 private:
     ConnectorData();
     void refreshData();
+    void connectToDateBase();
+    void disconnectFromDateBase();
 
 private:
     static ConnectorData *_instance;
-    QMap<QDate, DayInfo> mapDayInfo;
+    QSqlDatabase _dateBase;
 
 signals:
     void valueChanged();

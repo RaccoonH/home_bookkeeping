@@ -4,7 +4,7 @@ project(home_bookkeeping LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Sql)
 
 set(project_headers
 	src/about_window.h
@@ -38,4 +38,5 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC 
     Qt5::Core
     Qt5::Gui
-    Qt5::Widgets)
+    Qt5::Widgets
+	Qt5::Sql)
