@@ -8,6 +8,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QDate>
+#include <QLineEdit>
+#include <QCryptographicHash>
 #include "dayinfo_label.h"
 #include "dayinfo_window.h"
 #include "instruction_window.h"
@@ -27,6 +29,7 @@ private slots:
     void onAboutClicked();
     void onExitClicked();
     void onCalendarRefreshed();
+    void onSignButtonClicked();
 
 private:
     QMenu* createFileMenu();
@@ -34,10 +37,14 @@ private:
     QWidget* createHeadline();
     QWidget* createDaysOfWeek();
     QWidget* createCalendar();
+    void login();
+    void createMainWindow();
 
 private:
     QWidget *_centralWidget;
     QVBoxLayout *_mainLayout;
+    QWidget *_signWidget;
+    QLineEdit *linePass;
     QDate _date;
 };
 

@@ -13,30 +13,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     setAutoFillBackground(true);
     setPalette(pal);
 
-    QMenuBar *menuBar = new QMenuBar(this);
-    auto *fileMenu = createFileMenu();
-    auto *helpMenu = createHelpMenu();
-    menuBar->addMenu(fileMenu);
-    menuBar->addMenu(helpMenu);
-    setMenuBar(menuBar);
-
-    _centralWidget = new QWidget(this);
-    setCentralWidget(_centralWidget);
-    _mainLayout = new QVBoxLayout(_centralWidget);
-    _centralWidget->setLayout(_mainLayout);
-
-    _date = QDate::currentDate();
-    ConnectorData::init();
-    connect(ConnectorData::instance(),SIGNAL(valueChanged()),this,SLOT(onCalendarRefreshed()));
-
-    auto headline = createHeadline();
-    _mainLayout->addWidget(headline);
-
-    auto daysOfWeekLabel = createDaysOfWeek();
-    _mainLayout->addWidget(daysOfWeekLabel);
-
-    auto calendar = createCalendar();
-    _mainLayout->addWidget(calendar);
+    login();
 }
 
 QMenu* MainWindow::createFileMenu()
@@ -136,11 +113,6 @@ QWidget* MainWindow::createCalendar()
 
 void MainWindow::onCalendarRefreshed()
 {
-    _centralWidget = new QWidget(this);
-    setCentralWidget(_centralWidget);
-    _mainLayout = new QVBoxLayout(_centralWidget);
-    _centralWidget->setLayout(_mainLayout);
-
     if (QObject::sender()->objectName() == "pastMonthButton")
     {
         _date = _date.addMonths(-1);
@@ -149,6 +121,117 @@ void MainWindow::onCalendarRefreshed()
     {
         _date = _date.addMonths(1);
     }
+
+    QLayoutItem *child;
+    while ((child = _mainLayout->takeAt(0)) != 0) {
+        delete child->widget();
+        delete child;
+    }
+
+    auto headline = createHeadline();
+    _mainLayout->addWidget(headline);
+
+    auto daysOfWeekLabel = createDaysOfWeek();
+    _mainLayout->addWidget(daysOfWeekLabel);
+
+    auto calendar = createCalendar();
+    _mainLayout->addWidget(calendar);
+}
+
+void MainWindow::login()
+{
+    _signWidget = new QWidget(this);
+    setCentralWidget(_signWidget);
+    QHBoxLayout *mainLayout = new QHBoxLayout(_signWidget);
+    _signWidget->setLayout(mainLayout);
+    QWidget *loginWidget = new QWidget(_signWidget);
+    QVBoxLayout *loginLayout = new QVBoxLayout(loginWidget);
+
+    QLabel *headline = new QLabel("Домашняя бухгалтерия" ,loginWidget);
+    QFont textFont;
+    textFont.setPixelSize(30);
+    headline->setFont(textFont);
+
+    QLabel *pass;
+    QPushButton *signButton;
+    if(QFile::exists("passFile.dat"))
+    {
+        pass = new QLabel("Введите пароль для входа", loginWidget);
+        linePass = new QLineEdit(loginWidget);
+        linePass->setEchoMode(QLineEdit::Password);
+        signButton = new QPushButton("Войти");
+        signButton->setObjectName("sign");
+    }
+    else
+    {
+        pass = new QLabel("Введите пароль для регистрации", loginWidget);
+        linePass = new QLineEdit(loginWidget);
+        linePass->setEchoMode(QLineEdit::Password);
+        signButton = new QPushButton("Зарегистрироваться");
+        signButton->setObjectName("regist");
+    }
+    connect(signButton, SIGNAL(clicked()), this, SLOT(onSignButtonClicked()));
+    loginLayout->addWidget(headline);
+    loginLayout->addWidget(pass);
+    loginLayout->addWidget(linePass);
+    loginLayout->addWidget(signButton);
+    loginWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    loginLayout->setAlignment(Qt::AlignCenter);
+
+    mainLayout->addWidget(loginWidget);
+}
+
+void MainWindow::onSignButtonClicked()
+{
+    if(QObject::sender()->objectName() == "sign")
+    {
+        QFile filePass("passFile.dat");
+        filePass.open(QIODevice::ReadOnly);
+        QString password = filePass.readAll();
+
+        if(QCryptographicHash::hash(linePass->text().toUtf8(), QCryptographicHash::Md4).toHex()==password)
+        {
+            createMainWindow();
+            filePass.close();
+            _signWidget->close();
+        }
+        else
+        {
+
+        }
+        filePass.close();
+    }
+    else
+    {
+        QFile filePass("passFile.dat");
+        filePass.open(QIODevice::WriteOnly);
+        QTextStream writeStream(&filePass);
+        QString password = linePass->text();
+        qDebug() << password;
+        qDebug() << QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md4).toHex();
+        writeStream << QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md4).toHex();
+        filePass.close();
+    }
+}
+
+void MainWindow::createMainWindow()
+{
+
+    QMenuBar *menuBar = new QMenuBar(this);
+    auto *fileMenu = createFileMenu();
+    auto *helpMenu = createHelpMenu();
+    menuBar->addMenu(fileMenu);
+    menuBar->addMenu(helpMenu);
+    setMenuBar(menuBar);
+
+    _centralWidget = new QWidget(this);
+    setCentralWidget(_centralWidget);
+    _mainLayout = new QVBoxLayout(_centralWidget);
+    _centralWidget->setLayout(_mainLayout);
+
+    _date = QDate::currentDate();
+    ConnectorData::init();
+    connect(ConnectorData::instance(),SIGNAL(valueChanged()),this,SLOT(onCalendarRefreshed()));
 
     auto headline = createHeadline();
     _mainLayout->addWidget(headline);
