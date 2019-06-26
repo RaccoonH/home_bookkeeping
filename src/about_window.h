@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QApplication>
+#include <QLabel>
+#include <QLayout>
 
 class AboutWindow : public QDialog
 {

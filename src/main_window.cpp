@@ -4,8 +4,8 @@
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
-    resize(900, 600);
-    setMinimumSize(QSize(600, 400));
+    resize(1000, 700);
+    setMinimumSize(QSize(800, 600));
     setLayoutDirection(Qt::LeftToRight);
 
     QPalette pal(palette());

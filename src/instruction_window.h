@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QApplication>
+#include <QLayout>
+#include <QLabel>
 
 class InstructionWindow : public QDialog
 {
