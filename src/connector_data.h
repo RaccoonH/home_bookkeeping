@@ -24,7 +24,8 @@ public:
 
 private:
     ConnectorData();
-    void refreshData();
+    ~ConnectorData();
+    void refreshData(QDate date);
     void connectToDateBase();
     void disconnectFromDateBase();
 

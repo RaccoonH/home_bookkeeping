@@ -5,7 +5,12 @@
 
 ConnectorData::ConnectorData()
 {
+    connectToDateBase();
+}
 
+ConnectorData::~ConnectorData()
+{
+    disconnectFromDateBase();
 }
 
 ConnectorData * ConnectorData::_instance = nullptr;
@@ -18,20 +23,18 @@ ConnectorData *ConnectorData::instance()
 void ConnectorData::init()
 {
     _instance = new ConnectorData();
-    _instance->connectToDateBase();
 }
 
 void ConnectorData::deinit()
 {
-    _instance->disconnectFromDateBase();
-    delete _instance;
+    _instance->~ConnectorData();
 }
 
 DayInfo ConnectorData::getDayInfo(QDate date)
 {
     QSqlQuery query;
-    query.prepare("SELECT income, outcome FROM DayInfo_Table WHERE date=:dateString");
-    query.bindValue(":dateString", date.toString("yyyy-MM-dd"));
+    query.prepare("SELECT income, outcome FROM DayInfo_Table WHERE date=:date");
+    query.bindValue(":date", date.toString("yyyy-MM-dd"));
     query.exec();
     double in = 0;
     double out = 0;
@@ -49,30 +52,13 @@ DayInfo ConnectorData::getDayInfo(QDate date)
 void ConnectorData::setData(QDate date, DayInfo dayInfo)
 {
     QSqlQuery query;
-    query.prepare("SELECT income FROM DayInfo_Table WHERE date=:dateString");
-    query.bindValue(":dateString", date.toString("yyyy-MM-dd"));
+    query.prepare("REPLACE INTO DayInfo_Table (date, baseBalance, income, outcome) VALUES (:date, :base, :in, :out)");
+    query.bindValue(":date", date.toString("yyyy-MM-dd"));
+    query.bindValue(":base", dayInfo.getBaseBalance());
+    query.bindValue(":in", dayInfo.getIncome());
+    query.bindValue(":out", dayInfo.getOutcome());
     query.exec();
-    if(query.next())
-    {
-        QSqlQuery query2;
-        query2.prepare("UPDATE DayInfo_Table SET baseBalance =:base, income=:in, outcome=:out WHERE date=:date;");
-        query2.bindValue(":base", dayInfo.getBaseBalance());
-        query2.bindValue(":in", dayInfo.getIncome());
-        query2.bindValue(":out", dayInfo.getOutcome());
-        query2.bindValue(":date", date.toString("yyyy-MM-dd"));
-        query2.exec();
-    }
-    else
-    {
-        QSqlQuery query2;
-        query2.prepare("INSERT INTO DayInfo_Table (date, baseBalance, income, outcome) VALUES (:date ,:base, :in, :out);");
-        query2.bindValue(":date", date.toString("yyyy-MM-dd"));
-        query2.bindValue(":base", dayInfo.getBaseBalance());
-        query2.bindValue(":in", dayInfo.getIncome());
-        query2.bindValue(":out", dayInfo.getOutcome());
-        query2.exec();
-    }
-    refreshData();
+    refreshData(date);
     emit valueChanged();
 }
 
@@ -92,43 +78,59 @@ double ConnectorData::calcBaseBalance(QDate date)
     return baseBalance;
 }
 
-void ConnectorData::refreshData()
+void ConnectorData::refreshData(QDate date)
 {
     QSqlQuery query;
+    QDate dateChange;
     double baseBalance = 0;
-    query.exec("SELECT date FROM DayInfo_Table DESC");
+    double base = 0;
+    double in = 0;
+    double out = 0;
+    query.prepare("SELECT date, baseBalance, income, outcome FROM DayInfo_Table WHERE date >= :date ORDER BY date");
+    query.bindValue(":date", date.toString("yyyy-MM-dd"));
+    query.exec();
+
+    query.next();
+    base = query.value(1).toDouble();
+    in = query.value(2).toDouble();
+    out = query.value(3).toDouble();
     while(query.next())
     {
-        QDate date = query.value(0).toDate();
-        baseBalance = calcBaseBalance(date);
+        baseBalance = base + in - out;
+        dateChange = query.value(0).toDate();
+
         QSqlQuery query2;
         query2.prepare("UPDATE DayInfo_Table set baseBalance=:base WHERE date=:date");
         query2.bindValue(":base", baseBalance);
-        query2.bindValue(":date", date);
+        query2.bindValue(":date", dateChange);
         query2.exec();
+
+        base = baseBalance;
+        in = query.value(2).toDouble();
+        out = query.value(3).toDouble();
     }
 }
 
 void ConnectorData::connectToDateBase()
 {
-    _instance->_dateBase = QSqlDatabase::addDatabase("QSQLITE");
+    _dateBase = QSqlDatabase::addDatabase("QSQLITE");
     if(QFile("DayInfo_Base.db").exists())
     {
-        _instance->_dateBase.setDatabaseName("DayInfo_Base.db");
-        _instance->_dateBase.open();
+        _dateBase.setDatabaseName("DayInfo_Base.db");
+        _dateBase.open();
     }
 
     else
     {
-        _instance->_dateBase.setDatabaseName("DayInfo_Base.db");
-        _instance->_dateBase.open();
+        _dateBase.setDatabaseName("DayInfo_Base.db");
+        _dateBase.open();
         QSqlQuery query;
         query.exec("CREATE TABLE DayInfo_Table (date DATE PRIMARY KEY, baseBalance DOUBLE, income DOUBLE, outcome DOUBLE);");
-        _instance->_dateBase.open();
+        _dateBase.open();
     }
 }
 
 void ConnectorData::disconnectFromDateBase()
 {
-    _instance->_dateBase.close();
+    _dateBase.close();
 }
