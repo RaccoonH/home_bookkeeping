@@ -13,7 +13,14 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     setAutoFillBackground(true);
     setPalette(pal);
 
-    login();
+    _stackWidget = new QStackedWidget(this);
+    setCentralWidget(_stackWidget);
+    if(_settings.allKeys().count()==0)
+    {
+        createRegisterMenu();
+    }
+    createLoginMenu();
+    createMainMenu();
 }
 
 QMenu* MainWindow::createFileMenu()
@@ -122,10 +129,24 @@ void MainWindow::onCalendarRefreshed()
         _date = _date.addMonths(1);
     }
 
+//    delete _centralWidget;
+//    _centralWidget = new QWidget(this);
+//    setCentralWidget(_centralWidget);
+//    _mainLayout = new QVBoxLayout();
+//    _centralWidget->setLayout(_mainLayout);
+
     QLayoutItem *child;
+    QLayoutItem *child2;
+    int i = 0;
     while ((child = _mainLayout->takeAt(0)) != 0) {
+        while((child2 = child->widget()->layout()->takeAt(0)) != 0)
+        {
+            delete child2->widget();
+            delete child2;
+            i++;
+        }
+        delete child->widget()->layout();
         delete child->widget();
-        delete child;
     }
 
     auto headline = createHeadline();
@@ -138,83 +159,122 @@ void MainWindow::onCalendarRefreshed()
     _mainLayout->addWidget(calendar);
 }
 
-void MainWindow::login()
+void MainWindow::createRegisterMenu()
 {
-    _signWidget = new QWidget(this);
-    setCentralWidget(_signWidget);
-    QHBoxLayout *mainLayout = new QHBoxLayout(_signWidget);
-    _signWidget->setLayout(mainLayout);
-    QWidget *loginWidget = new QWidget(_signWidget);
-    QVBoxLayout *loginLayout = new QVBoxLayout(loginWidget);
+    _registerMenuWidget = new QWidget(_stackWidget);
+    _stackWidget->insertWidget(0,_registerMenuWidget);
 
-    QLabel *headline = new QLabel("Домашняя бухгалтерия" ,loginWidget);
+    QHBoxLayout *registerHLayout = new QHBoxLayout(_registerMenuWidget);
+    _registerMenuWidget->setLayout(registerHLayout);
+    QWidget *registerVLayoutWidget = new QWidget(_registerMenuWidget);
+    QVBoxLayout *registerVLayout = new QVBoxLayout(registerVLayoutWidget);
+
+    QLabel *headline = new QLabel("Домашняя бухгалтерия" ,registerVLayoutWidget);
     QFont textFont;
     textFont.setPixelSize(30);
     headline->setFont(textFont);
 
     QLabel *pass;
     QPushButton *signButton;
-    if(QFile::exists("passFile.dat"))
-    {
-        pass = new QLabel("Введите пароль для входа", loginWidget);
-        linePass = new QLineEdit(loginWidget);
-        linePass->setEchoMode(QLineEdit::Password);
-        signButton = new QPushButton("Войти");
-        signButton->setObjectName("sign");
-    }
-    else
-    {
-        pass = new QLabel("Введите пароль для регистрации", loginWidget);
-        linePass = new QLineEdit(loginWidget);
-        linePass->setEchoMode(QLineEdit::Password);
-        signButton = new QPushButton("Зарегистрироваться");
-        signButton->setObjectName("regist");
-    }
-    connect(signButton, SIGNAL(clicked()), this, SLOT(onSignButtonClicked()));
-    loginLayout->addWidget(headline);
-    loginLayout->addWidget(pass);
-    loginLayout->addWidget(linePass);
-    loginLayout->addWidget(signButton);
-    loginWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-    loginLayout->setAlignment(Qt::AlignCenter);
+    QLabel *errorLabelRegister = new QLabel("",this);
+    errorLabelRegister->setObjectName("errorLabelRegister");
 
-    mainLayout->addWidget(loginWidget);
+    pass = new QLabel("Введите пароль для регистрации", registerVLayoutWidget);
+    QLineEdit *linePass = new QLineEdit(registerVLayoutWidget);
+    linePass->setObjectName("linePassRegister");
+    linePass->setEchoMode(QLineEdit::Password);
+    signButton = new QPushButton("Зарегистрироваться");
+    signButton->setObjectName("regist");
+
+    connect(signButton, SIGNAL(clicked()), this, SLOT(onSignButtonClicked()));
+    registerVLayout->addWidget(headline);
+    registerVLayout->addWidget(pass);
+    registerVLayout->addWidget(linePass);
+    registerVLayout->addWidget(errorLabelRegister);
+    registerVLayout->addWidget(signButton);
+    registerVLayoutWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    registerVLayout->setAlignment(Qt::AlignCenter);
+
+    registerHLayout->addWidget(registerVLayoutWidget);
+}
+
+void MainWindow::createLoginMenu()
+{
+    _loginMenuWidget = new QWidget(_stackWidget);
+    _stackWidget->insertWidget(1,_loginMenuWidget);
+
+    QHBoxLayout *loginHLayout = new QHBoxLayout(_loginMenuWidget);
+    _loginMenuWidget->setLayout(loginHLayout);
+    QWidget *loginVLayoutWidget = new QWidget(_loginMenuWidget);
+    QVBoxLayout *loginVLayout = new QVBoxLayout(loginVLayoutWidget);
+
+    QLabel *headline = new QLabel("Домашняя бухгалтерия" ,_loginMenuWidget);
+    QFont textFont;
+    textFont.setPixelSize(30);
+    headline->setFont(textFont);
+
+    QLabel *pass;
+    QLabel *errorLabel = new QLabel("",this);
+    errorLabel->setObjectName("errorLabelLogin");
+    QPushButton *signButton;
+    QPushButton *changePassButton;
+
+    pass = new QLabel("Введите пароль для входа", _loginMenuWidget);
+    QLineEdit *linePass = new QLineEdit(_loginMenuWidget);
+    linePass->setObjectName("linePassLogin");
+    linePass->setEchoMode(QLineEdit::Password);
+    signButton = new QPushButton("Войти");
+    signButton->setObjectName("sign");
+    changePassButton = new QPushButton("Сменить пароль");
+    changePassButton->setObjectName("change");
+
+    connect(signButton, SIGNAL(clicked()), this, SLOT(onSignButtonClicked()));
+    loginVLayout->addWidget(headline);
+    loginVLayout->addWidget(pass);
+    loginVLayout->addWidget(linePass);
+    loginVLayout->addWidget(errorLabel);
+    loginVLayout->addWidget(signButton);
+    loginVLayout->addWidget(changePassButton);
+    loginVLayoutWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    loginVLayout->setAlignment(Qt::AlignCenter);
+
+    loginHLayout->addWidget(loginVLayoutWidget);
 }
 
 void MainWindow::onSignButtonClicked()
 {
+    QString pass;
     if(QObject::sender()->objectName() == "sign")
     {
-        QFile filePass("passFile.dat");
-        filePass.open(QIODevice::ReadOnly);
-        QString password = filePass.readAll();
-
-        if(QCryptographicHash::hash(linePass->text().toUtf8(), QCryptographicHash::Md4).toHex()==password)
+        pass = _stackWidget->currentWidget()->findChild<QLineEdit*>("linePassLogin")->text();
+        if(pass==_settings.value("password"))
         {
-            createMainWindow();
-            filePass.close();
-            _signWidget->close();
+            _stackWidget->setCurrentIndex(3);
+            _loginMenuWidget->~QWidget();
         }
         else
         {
-
+            _stackWidget->currentWidget()->findChild<QLabel*>("errorLabelLogin")->setText("Неправильный пароль");
+            qDebug() << _settings.fileName();
         }
-        filePass.close();
     }
     else
     {
-        QFile filePass("passFile.dat");
-        filePass.open(QIODevice::WriteOnly);
-        QTextStream writeStream(&filePass);
-        QString password = linePass->text();
-        qDebug() << password;
-        qDebug() << QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md4).toHex();
-        writeStream << QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md4).toHex();
-        filePass.close();
+        pass = _stackWidget->currentWidget()->findChild<QLineEdit*>("linePassRegister")->text();
+        if(pass.length()>3)
+        {
+            _settings.setValue("password", pass);
+            _settings.sync();
+            _stackWidget->setCurrentIndex(1);
+        }
+        else
+        {
+            _stackWidget->currentWidget()->findChild<QLabel*>("errorLabelRegister")->setText("Ваш пароль слишком короткий!");
+        }
     }
 }
 
-void MainWindow::createMainWindow()
+void MainWindow::createMainMenu()
 {
 
     QMenuBar *menuBar = new QMenuBar(this);
@@ -224,10 +284,10 @@ void MainWindow::createMainWindow()
     menuBar->addMenu(helpMenu);
     setMenuBar(menuBar);
 
-    _centralWidget = new QWidget(this);
-    setCentralWidget(_centralWidget);
+    _centralWidget = new QWidget(_stackWidget);
     _mainLayout = new QVBoxLayout(_centralWidget);
     _centralWidget->setLayout(_mainLayout);
+    _stackWidget->insertWidget(3,_centralWidget);
 
     _date = QDate::currentDate();
     ConnectorData::init();

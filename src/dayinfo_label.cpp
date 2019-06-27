@@ -26,7 +26,7 @@ DayInfoLabel::~DayInfoLabel()
 
 void DayInfoLabel::onDayInfoLabelClicked()
 {
-    DayInfoWindow dw(dayInfo,this);
+    DayInfoWindow dw(dayInfo);
 }
 
 void DayInfoLabel::mousePressEvent(QMouseEvent* event)

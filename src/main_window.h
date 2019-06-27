@@ -10,6 +10,8 @@
 #include <QDate>
 #include <QLineEdit>
 #include <QCryptographicHash>
+#include <QSettings>
+#include <QStackedWidget>
 #include "dayinfo_label.h"
 #include "dayinfo_window.h"
 #include "instruction_window.h"
@@ -32,19 +34,22 @@ private slots:
     void onSignButtonClicked();
 
 private:
+    void createRegisterMenu();
+    void createLoginMenu();
+    void createMainMenu();
     QMenu* createFileMenu();
     QMenu* createHelpMenu();
     QWidget* createHeadline();
     QWidget* createDaysOfWeek();
     QWidget* createCalendar();
-    void login();
-    void createMainWindow();
 
 private:
+    QStackedWidget *_stackWidget;
     QWidget *_centralWidget;
     QVBoxLayout *_mainLayout;
-    QWidget *_signWidget;
-    QLineEdit *linePass;
+    QWidget *_loginMenuWidget;
+    QWidget *_registerMenuWidget;
+    QSettings _settings;
     QDate _date;
 };
 

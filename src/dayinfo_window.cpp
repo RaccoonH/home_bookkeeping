@@ -63,7 +63,6 @@ DayInfoWindow::DayInfoWindow(DayInfo d, QWidget *parent) :
 
 DayInfoWindow::~DayInfoWindow()
 {
-    this->close();
 }
 
 void DayInfoWindow::onValueChanged(double value)
@@ -77,7 +76,7 @@ void DayInfoWindow::onValueChanged(double value)
 
 void DayInfoWindow::onCancelClicked()
 {
-    this->close();
+    DayInfoWindow::close();
 }
 
 void DayInfoWindow::onApplyClicked()
@@ -85,5 +84,5 @@ void DayInfoWindow::onApplyClicked()
     _dayInfo.setIncome(_incomeBox->value());
     _dayInfo.setOutcome(_outcomeBox->value());
     ConnectorData::instance()->setData(_date, _dayInfo);
-    this->close();
+    DayInfoWindow::close();
 }
