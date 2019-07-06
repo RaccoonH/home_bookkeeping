@@ -1,7 +1,5 @@
 #include "connector_data.h"
 #include "dayinfo_label.h"
-#include <QDebug>
-
 
 ConnectorData::ConnectorData()
 {

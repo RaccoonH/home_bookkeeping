@@ -12,10 +12,11 @@
 #include <QCryptographicHash>
 #include <QSettings>
 #include <QStackedWidget>
-#include "dayinfo_label.h"
-#include "dayinfo_window.h"
 #include "instruction_window.h"
 #include "about_window.h"
+#include "registration_menu.h"
+#include "login_menu.h"
+#include "calendar_menu.h"
 
 
 class MainWindow : public QMainWindow
@@ -30,27 +31,24 @@ private slots:
     void onHelpClicked();
     void onAboutClicked();
     void onExitClicked();
-    void onCalendarRefreshed();
     void onSignButtonClicked();
+    void onRegistButtonClicked();
 
 private:
     void createRegisterMenu();
     void createLoginMenu();
-    void createMainMenu();
+    void createMenuBar();
     QMenu* createFileMenu();
     QMenu* createHelpMenu();
-    QWidget* createHeadline();
-    QWidget* createDaysOfWeek();
-    QWidget* createCalendar();
 
 private:
-    QStackedWidget *_stackWidget;
-    QWidget *_centralWidget;
-    QVBoxLayout *_mainLayout;
-    QWidget *_loginMenuWidget;
-    QWidget *_registerMenuWidget;
+    CalendarMenu *_calendarMenu;
+    QMenuBar *_menuBar;
+    QStackedWidget *_stackWidget;    
+    RegistrationMenu *_regMenu;
+    LoginMenu *_loginMenu;
     QSettings _settings;
-    QDate _date;
+
 };
 
 #endif // MAINWINDOW_H

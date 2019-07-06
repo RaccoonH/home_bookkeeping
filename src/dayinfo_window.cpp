@@ -3,7 +3,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include "connector_data.h"
-#include <qdebug.h>
+#include <QLabel>
 
 DayInfoWindow::DayInfoWindow(DayInfo d, QWidget *parent) :
     QDialog(parent)

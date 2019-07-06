@@ -1,7 +1,6 @@
 #ifndef CONNECTOR_DATA_H
 #define CONNECTOR_DATA_H
 
-#include "main_window.h"
 #include "dayinfo.h"
 #include <QObject>
 #include <QMap>
@@ -9,6 +8,7 @@
 #include <QFile>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QVariant>
 
 class ConnectorData : public QObject
 {
