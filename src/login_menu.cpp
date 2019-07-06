@@ -13,19 +13,21 @@ LoginMenu::LoginMenu(QWidget *parent) :
     textFont.setPixelSize(30);
     headline->setFont(textFont);
 
-    QLabel *pass;
-    QLabel *errorLabel = new QLabel("",this);
-    errorLabel->setObjectName("errorLabelLogin");
-    QPushButton *signButton;
-
-    pass = new QLabel("Введите пароль для входа", loginVLayoutWidget);
+    QLabel *pass = new QLabel("Введите пароль для входа", loginVLayoutWidget);
     QLineEdit *linePass = new QLineEdit(loginVLayoutWidget);
     linePass->setObjectName("linePassLogin");
     linePass->setEchoMode(QLineEdit::Password);
-    signButton = new QPushButton("Войти");
-    signButton->setObjectName("sign");
 
+    QLabel *errorLabel = new QLabel("",this);
+    errorLabel->setObjectName("errorLabelLogin");
+    QPalette textColor;
+    textColor.setColor(QPalette::WindowText, Qt::red);
+    errorLabel->setPalette(textColor);
+
+    QPushButton *signButton;
+    signButton = new QPushButton("Войти", loginVLayoutWidget);
     connect(signButton, SIGNAL(clicked()), this, SLOT(onLoginClicked()));
+
     loginVLayout->addWidget(headline);
     loginVLayout->addWidget(pass);
     loginVLayout->addWidget(linePass);

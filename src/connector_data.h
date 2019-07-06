@@ -26,12 +26,12 @@ private:
     ConnectorData();
     ~ConnectorData();
     void refreshData(QDate date);
-    void connectToDateBase();
-    void disconnectFromDateBase();
+    void connectToDataBase();
+    void disconnectFromDataBase();
 
 private:
     static ConnectorData *_instance;
-    QSqlDatabase _dateBase;
+    QSqlDatabase _dataBase;
 
 signals:
     void valueChanged();

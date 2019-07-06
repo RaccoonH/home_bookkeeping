@@ -17,6 +17,7 @@
 #include "registration_menu.h"
 #include "login_menu.h"
 #include "calendar_menu.h"
+#include "changepass_menu.h"
 
 
 class MainWindow : public QMainWindow
@@ -31,12 +32,13 @@ private slots:
     void onHelpClicked();
     void onAboutClicked();
     void onExitClicked();
+    void onChangePassClicked();
     void onSignButtonClicked();
     void onRegistButtonClicked();
+    void onButtonChangeCanceled();
+    void onButtonChangeApplied();
 
 private:
-    void createRegisterMenu();
-    void createLoginMenu();
     void createMenuBar();
     QMenu* createFileMenu();
     QMenu* createHelpMenu();
@@ -46,6 +48,7 @@ private:
     QMenuBar *_menuBar;
     QStackedWidget *_stackWidget;    
     RegistrationMenu *_regMenu;
+    ChangePassMenu *_passMenu;
     LoginMenu *_loginMenu;
     QSettings _settings;
 

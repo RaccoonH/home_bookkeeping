@@ -1,4 +1,5 @@
 #include "main_window.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -34,146 +35,82 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 QMenu* MainWindow::createFileMenu()
 {
     QMenu *file = new QMenu("Файл",this);
-    QAction* exitAction = file->addAction("Выход");
+    QAction *changePass = file->addAction("Сменить пароль");
+    connect(changePass, SIGNAL(triggered()), this, SLOT(onChangePassClicked()));
+
+    QAction *exitAction = file->addAction("Выход");
     connect(exitAction, SIGNAL(triggered()), this, SLOT(onExitClicked()));
+
     return file;
 }
 
 QMenu* MainWindow::createHelpMenu()
 {
     QMenu *menu = new QMenu("Справка",this);
-    QAction* helpAction = menu->addAction("Инструкция");
+    QAction *helpAction = menu->addAction("Инструкция");
     connect(helpAction, SIGNAL(triggered()), this, SLOT(onHelpClicked()));
-    QAction* aboutAction = menu->addAction("О программе");
+    QAction *aboutAction = menu->addAction("О программе");
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(onAboutClicked()));
     return menu;
 }
 
-//QWidget* MainWindow::createHeadline()
-//{
-//    QWidget *monthAndYearLayoutWidget = new QWidget(_centralWidget);
-//    QHBoxLayout *monthAndYearLayout = new QHBoxLayout(monthAndYearLayoutWidget);
+void MainWindow::onChangePassClicked()
+{
+    _passMenu = new ChangePassMenu(this);
+    _stackWidget->addWidget(_passMenu);
+    _stackWidget->setCurrentWidget(_passMenu);
+    connect(_passMenu,SIGNAL(canceled()),this,SLOT(onButtonChangeCanceled()));
+    connect(_passMenu,SIGNAL(applied()),this,SLOT(onButtonChangeApplied()));
+    _menuBar->hide();
+}
 
-//    QPushButton *pastMonthButton = new QPushButton("<");
-//    pastMonthButton->setObjectName("pastMonthButton");
-//    pastMonthButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-//    connect(pastMonthButton,SIGNAL(clicked()),this,SLOT(onCalendarRefreshed()));
+void MainWindow::onButtonChangeCanceled()
+{
+    _stackWidget->setCurrentWidget(_calendarMenu);
+    _menuBar->show();
+}
 
-//    QString stringMonthAndYear = _date.toString("MMM") + " " +  _date.toString("yyyy");
-//    QLabel *monthAndYear = new QLabel(stringMonthAndYear);
-//    monthAndYear->setAlignment(Qt::AlignCenter);
-
-//    QPushButton *nextMonthButton = new QPushButton(">");
-//    nextMonthButton->setObjectName("nextMonthButton");
-//    connect(nextMonthButton,SIGNAL(clicked()),this,SLOT(onCalendarRefreshed()));
-//    nextMonthButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
-
-//    monthAndYearLayout->addWidget(pastMonthButton);
-//    monthAndYearLayout->addWidget(monthAndYear);
-//    monthAndYearLayout->addWidget(nextMonthButton);
-//    monthAndYearLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-
-//    return monthAndYearLayoutWidget;
-//}
-
-//QWidget* MainWindow::createDaysOfWeek()
-//{
-//    QWidget *daysLayoutWidget = new QWidget(_centralWidget);
-//    QHBoxLayout *daysLayout = new QHBoxLayout(daysLayoutWidget);
-//    QDate date(1,1,1);
-//    for(int i = 0;i<7;i++)
-//    {
-//        QLabel *nameOfDay = new QLabel;
-//        nameOfDay->setText(date.toString("ddd"));
-//        date = date.addDays(1);
-//        daysLayout->addWidget(nameOfDay);
-//    }
-//    daysLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-
-//    return daysLayoutWidget;
-//}
-
-//QWidget* MainWindow::createCalendar()
-//{
-//    QWidget *calendarLayoutWidget = new QWidget(_centralWidget);
-//    QGridLayout *calendarLayout = new QGridLayout(calendarLayoutWidget);
-//    calendarLayoutWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-//    int week = 1;
-//    int day;
-//    int month;
-
-//    _date = _date.addDays(1-(_date.day()));
-//    day = _date.dayOfWeek();
-//    month = _date.daysInMonth();
-//    for(int i = 1;i<=month;i++)
-//    {
-//        DayInfo dayInfo = ConnectorData::instance()->getDayInfo(_date);
-//        DayInfoLabel *dayInfoLabel = new DayInfoLabel(dayInfo,this);
-//        calendarLayout->addWidget(dayInfoLabel,week,day);
-//        _date = _date.addDays(1);
-//        day++;
-//        if(day==8)
-//        {
-//            day = 1;
-//            week++;
-//        }
-//    }
-//    _date = _date.addMonths(-1);
-//    calendarLayout->setHorizontalSpacing(2);
-//    calendarLayout->setVerticalSpacing(2);
-
-//    return calendarLayoutWidget;
-//}
-
-//void MainWindow::onCalendarRefreshed()
-//{
-//    if (QObject::sender()->objectName() == "pastMonthButton")
-//    {
-//        _date = _date.addMonths(-1);
-//    }
-//    if(QObject::sender()->objectName() == "nextMonthButton")
-//    {
-//        _date = _date.addMonths(1);
-//    }
-
-//    QLayoutItem *child;
-//    QLayoutItem *child2;
-//    int i = 0;
-//    while ((child = _mainLayout->takeAt(0)) != 0) {
-//        while((child2 = child->widget()->layout()->takeAt(0)) != 0)
-//        {
-//            delete child2->widget();
-//            delete child2;
-//            i++;
-//        }
-//        delete child->widget()->layout();
-//        delete child->widget();
-//    }
-
-//    auto headline = createHeadline();
-//    _mainLayout->addWidget(headline);
-
-//    auto daysOfWeekLabel = createDaysOfWeek();
-//    _mainLayout->addWidget(daysOfWeekLabel);
-
-//    auto calendar = createCalendar();
-//    _mainLayout->addWidget(calendar);
-//}
+void MainWindow::onButtonChangeApplied()
+{
+    QString oldPass;
+    oldPass = _stackWidget->currentWidget()->findChild<QLineEdit*>("oldLinePass")->text();
+    QString newPass;
+    newPass = _stackWidget->currentWidget()->findChild<QLineEdit*>("newLinePass")->text();
+    if(oldPass==_settings.value("password"))
+    {
+        if(newPass.length()>3)
+        {
+            _settings.setValue("password", newPass);
+            _settings.sync();
+            _stackWidget->setCurrentWidget(_loginMenu);
+        }
+        else
+        {
+            _stackWidget->currentWidget()->findChild<QLabel*>("errorLabelChangePass")->setText("Ваш новый пароль слишком короткий!");
+        }
+    }
+    else
+    {
+        _stackWidget->currentWidget()->findChild<QLabel*>("errorLabelChangePass")->setText("Неверный старый пароль!");
+    }
+}
 
 void MainWindow::onSignButtonClicked()
 {
     QString pass;
     pass = _stackWidget->currentWidget()->findChild<QLineEdit*>("linePassLogin")->text();
+    _stackWidget->currentWidget()->findChild<QLineEdit*>("linePassLogin")->setText("");
     if(pass==_settings.value("password"))
     {
+        _stackWidget->currentWidget()->findChild<QLabel*>("errorLabelLogin")->setText("");
         _stackWidget->setCurrentWidget(_calendarMenu);
         _menuBar->show();
     }
     else
     {
-        _stackWidget->currentWidget()->findChild<QLabel*>("errorLabelLogin")->setText("Неправильный пароль");
+        _stackWidget->currentWidget()->findChild<QLabel*>("errorLabelLogin")->setText("Неправильный пароль!");
     }
+
 }
 
 void MainWindow::onRegistButtonClicked()
@@ -200,24 +137,6 @@ void MainWindow::createMenuBar()
     _menuBar->addMenu(fileMenu);
     _menuBar->addMenu(helpMenu);
     setMenuBar(_menuBar);
-
-//    _centralWidget = new QWidget(_stackWidget);
-//    _mainLayout = new QVBoxLayout(_centralWidget);
-//    _centralWidget->setLayout(_mainLayout);
-//    _stackWidget->addWidget(_centralWidget);
-
-//    _date = QDate::currentDate();
-//    ConnectorData::init();
-//    connect(ConnectorData::instance(),SIGNAL(valueChanged()),this,SLOT(onCalendarRefreshed()));
-
-//    auto headline = createHeadline();
-//    _mainLayout->addWidget(headline);
-
-//    auto daysOfWeekLabel = createDaysOfWeek();
-//    _mainLayout->addWidget(daysOfWeekLabel);
-
-//    auto calendar = createCalendar();
-//    _mainLayout->addWidget(calendar);
 }
 
 void MainWindow::onHelpClicked()

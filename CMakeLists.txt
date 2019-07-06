@@ -9,6 +9,7 @@ find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Sql)
 set(project_headers
 	src/about_window.h
 	src/calendar_menu.h
+	src/changepass_menu.h
 	src/dayinfo.h
 	src/dayinfo_label.h
 	src/connector_data.h
@@ -22,6 +23,7 @@ set(project_sources
     src/main.cpp
 	src/about_window.cpp
 	src/calendar_menu.cpp
+	src/changepass_menu.cpp
 	src/dayinfo.cpp
 	src/dayinfo_label.cpp
 	src/connector_data.cpp

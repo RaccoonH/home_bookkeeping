@@ -13,19 +13,20 @@ RegistrationMenu::RegistrationMenu(QWidget *parent) :
     textFont.setPixelSize(30);
     headline->setFont(textFont);
 
-    QLabel *pass;
-    QPushButton *signButton;
-    QLabel *errorLabelRegister = new QLabel("",this);
-    errorLabelRegister->setObjectName("errorLabelRegister");
-
-    pass = new QLabel("Введите пароль для регистрации", registerVLayoutWidget);
+    QLabel *pass = new QLabel("Введите пароль для регистрации", registerVLayoutWidget);
     QLineEdit *linePass = new QLineEdit(registerVLayoutWidget);
     linePass->setObjectName("linePassRegister");
     linePass->setEchoMode(QLineEdit::Password);
-    signButton = new QPushButton("Зарегистрироваться");
-    signButton->setObjectName("regist");
 
+    QLabel *errorLabelRegister = new QLabel("",this);
+    errorLabelRegister->setObjectName("errorLabelRegister");
+    QPalette textColor;
+    textColor.setColor(QPalette::WindowText, Qt::red);
+    errorLabelRegister->setPalette(textColor);
+
+    QPushButton *signButton = new QPushButton("Зарегистрироваться", registerVLayoutWidget);
     connect(signButton, SIGNAL(clicked()), this, SLOT(onRegistClicked()));
+
     registerVLayout->addWidget(headline);
     registerVLayout->addWidget(pass);
     registerVLayout->addWidget(linePass);

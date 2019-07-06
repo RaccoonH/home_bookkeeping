@@ -3,12 +3,12 @@
 
 ConnectorData::ConnectorData()
 {
-    connectToDateBase();
+    connectToDataBase();
 }
 
 ConnectorData::~ConnectorData()
 {
-    disconnectFromDateBase();
+    disconnectFromDataBase();
 }
 
 ConnectorData * ConnectorData::_instance = nullptr;
@@ -109,26 +109,26 @@ void ConnectorData::refreshData(QDate date)
     }
 }
 
-void ConnectorData::connectToDateBase()
+void ConnectorData::connectToDataBase()
 {
-    _dateBase = QSqlDatabase::addDatabase("QSQLITE");
+    _dataBase = QSqlDatabase::addDatabase("QSQLITE");
     if(QFile("DayInfo_Base.db").exists())
     {
-        _dateBase.setDatabaseName("DayInfo_Base.db");
-        _dateBase.open();
+        _dataBase.setDatabaseName("DayInfo_Base.db");
+        _dataBase.open();
     }
 
     else
     {
-        _dateBase.setDatabaseName("DayInfo_Base.db");
-        _dateBase.open();
+        _dataBase.setDatabaseName("DayInfo_Base.db");
+        _dataBase.open();
         QSqlQuery query;
         query.exec("CREATE TABLE DayInfo_Table (date DATE PRIMARY KEY, baseBalance DOUBLE, income DOUBLE, outcome DOUBLE);");
-        _dateBase.open();
+        _dataBase.open();
     }
 }
 
-void ConnectorData::disconnectFromDateBase()
+void ConnectorData::disconnectFromDataBase()
 {
-    _dateBase.close();
+    _dataBase.close();
 }
